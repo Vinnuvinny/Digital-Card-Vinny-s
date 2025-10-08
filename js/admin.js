@@ -3,6 +3,10 @@ class AdminPanel {
     constructor() {
         this.isAuthenticated = false;
         this.adminModal = null;
+        this.loginAttempts = 0;
+        this.lockoutTime = null;
+        this.maxAttempts = 5;
+        this.lockoutDuration = 15 * 60 * 1000; // 15 minutes
         this.setupAdminPanel();
         this.bindEvents();
         this.loadAdminSettings();
@@ -575,10 +579,24 @@ class AdminPanel {
 
     handleLogin(e) {
         e.preventDefault();
+        
+        // Check if account is locked
+        if (this.lockoutTime && Date.now() < this.lockoutTime) {
+            const remainingTime = Math.ceil((this.lockoutTime - Date.now()) / 60000);
+            window.digitalCard?.showToast(`Account locked. Try again in ${remainingTime} minutes.`, 'error');
+            return;
+        }
+        
         const password = document.getElementById('admin-password').value;
         const storedPassword = localStorage.getItem('adminPassword') || 'admin123';
         
         if (password === storedPassword) {
+            // Reset attempts on successful login
+            this.loginAttempts = 0;
+            this.lockoutTime = null;
+            localStorage.removeItem('adminLockout');
+            localStorage.removeItem('adminAttempts');
+            
             this.isAuthenticated = true;
             this.showDashboard();
             window.digitalCard?.showToast('Login successful!', 'success');
@@ -588,7 +606,18 @@ class AdminPanel {
                 window.digitalCard.isAdminMode = true;
             }
         } else {
-            window.digitalCard?.showToast('Invalid password!', 'error');
+            this.loginAttempts++;
+            localStorage.setItem('adminAttempts', this.loginAttempts);
+            
+            if (this.loginAttempts >= this.maxAttempts) {
+                this.lockoutTime = Date.now() + this.lockoutDuration;
+                localStorage.setItem('adminLockout', this.lockoutTime);
+                window.digitalCard?.showToast('Too many failed attempts. Account locked for 15 minutes.', 'error');
+            } else {
+                const remaining = this.maxAttempts - this.loginAttempts;
+                window.digitalCard?.showToast(`Invalid password! ${remaining} attempts remaining.`, 'error');
+            }
+            
             document.getElementById('admin-password').value = '';
         }
     }
@@ -638,13 +667,34 @@ class AdminPanel {
         skills.forEach((skill, index) => {
             const skillItem = document.createElement('div');
             skillItem.className = 'skill-editor-item';
-            skillItem.innerHTML = `
-                <input type="text" value="${skill.name}" data-skill-index="${index}" data-field="name">
-                <input type="number" value="${skill.level}" min="0" max="100" data-skill-index="${index}" data-field="level">
-                <button type="button" class="admin-btn danger" onclick="adminPanel.removeSkill(${index})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            `;
+            
+            // Create elements safely to prevent XSS
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.value = skill.name; // Safe - not using innerHTML
+            nameInput.setAttribute('data-skill-index', index);
+            nameInput.setAttribute('data-field', 'name');
+            
+            const levelInput = document.createElement('input');
+            levelInput.type = 'number';
+            levelInput.value = skill.level;
+            levelInput.min = '0';
+            levelInput.max = '100';
+            levelInput.setAttribute('data-skill-index', index);
+            levelInput.setAttribute('data-field', 'level');
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'admin-btn danger';
+            deleteBtn.addEventListener('click', () => this.removeSkill(index));
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-trash';
+            deleteBtn.appendChild(icon);
+            
+            skillItem.appendChild(nameInput);
+            skillItem.appendChild(levelInput);
+            skillItem.appendChild(deleteBtn);
             skillsList.appendChild(skillItem);
         });
         
@@ -714,12 +764,22 @@ class AdminPanel {
         skills.forEach(skill => {
             const skillItem = document.createElement('div');
             skillItem.className = 'skill-item';
-            skillItem.innerHTML = `
-                <span class="skill-name">${skill.name}</span>
-                <div class="skill-bar">
-                    <div class="skill-progress" data-progress="${skill.level}"></div>
-                </div>
-            `;
+            
+            // Create elements safely to prevent XSS
+            const skillName = document.createElement('span');
+            skillName.className = 'skill-name';
+            skillName.textContent = skill.name; // Safe - using textContent
+            
+            const skillBar = document.createElement('div');
+            skillBar.className = 'skill-bar';
+            
+            const skillProgress = document.createElement('div');
+            skillProgress.className = 'skill-progress';
+            skillProgress.setAttribute('data-progress', skill.level);
+            
+            skillBar.appendChild(skillProgress);
+            skillItem.appendChild(skillName);
+            skillItem.appendChild(skillBar);
             skillsContainer.appendChild(skillItem);
         });
         
@@ -803,8 +863,26 @@ class AdminPanel {
             return;
         }
         
-        if (newPassword.length < 6) {
-            window.digitalCard?.showToast('Password must be at least 6 characters long!', 'error');
+        // Enhanced password validation
+        if (newPassword.length < 8) {
+            window.digitalCard?.showToast('Password must be at least 8 characters long!', 'error');
+            return;
+        }
+        
+        // Check for password strength
+        const hasUpperCase = /[A-Z]/.test(newPassword);
+        const hasLowerCase = /[a-z]/.test(newPassword);
+        const hasNumbers = /\d/.test(newPassword);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
+        
+        if (!(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar)) {
+            window.digitalCard?.showToast('Password must contain uppercase, lowercase, numbers, and special characters!', 'error');
+            return;
+        }
+        
+        // Check if password is not the default
+        if (newPassword === 'admin123') {
+            window.digitalCard?.showToast('Please choose a different password from the default!', 'error');
             return;
         }
         
@@ -894,6 +972,25 @@ class AdminPanel {
     }
 
     loadAdminSettings() {
+        // Load rate limiting data
+        const attempts = localStorage.getItem('adminAttempts');
+        const lockout = localStorage.getItem('adminLockout');
+        
+        if (attempts) {
+            this.loginAttempts = parseInt(attempts);
+        }
+        
+        if (lockout) {
+            this.lockoutTime = parseInt(lockout);
+            // Clear expired lockout
+            if (Date.now() >= this.lockoutTime) {
+                this.loginAttempts = 0;
+                this.lockoutTime = null;
+                localStorage.removeItem('adminLockout');
+                localStorage.removeItem('adminAttempts');
+            }
+        }
+        
         // Load any saved admin settings
         const savedSkills = localStorage.getItem('skills');
         if (savedSkills) {

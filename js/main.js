@@ -215,22 +215,68 @@ END:VCARD`;
     validateContactForm(data) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         
-        if (!data.senderName.trim()) {
+        // Sanitize inputs
+        const sanitizedName = this.sanitizeInput(data.senderName.trim());
+        const sanitizedEmail = this.sanitizeInput(data.senderEmail.trim());
+        const sanitizedMessage = this.sanitizeInput(data.message.trim());
+        
+        if (!sanitizedName) {
             this.showToast('Please enter your name', 'error');
             return false;
         }
         
-        if (!emailRegex.test(data.senderEmail)) {
+        if (sanitizedName.length > 100) {
+            this.showToast('Name must be less than 100 characters', 'error');
+            return false;
+        }
+        
+        if (!emailRegex.test(sanitizedEmail)) {
             this.showToast('Please enter a valid email address', 'error');
             return false;
         }
         
-        if (!data.message.trim()) {
+        if (!sanitizedMessage) {
             this.showToast('Please enter a message', 'error');
             return false;
         }
         
+        if (sanitizedMessage.length > 1000) {
+            this.showToast('Message must be less than 1000 characters', 'error');
+            return false;
+        }
+        
+        // Check for suspicious content
+        const suspiciousPatterns = [
+            /<script/i,
+            /javascript:/i,
+            /vbscript:/i,
+            /onload=/i,
+            /onerror=/i,
+            /onclick=/i
+        ];
+        
+        const allInputs = sanitizedName + sanitizedEmail + sanitizedMessage;
+        for (const pattern of suspiciousPatterns) {
+            if (pattern.test(allInputs)) {
+                this.showToast('Invalid characters detected in input', 'error');
+                return false;
+            }
+        }
+        
         return true;
+    }
+
+    sanitizeInput(input) {
+        if (typeof input !== 'string') return '';
+        
+        // Remove HTML tags and encode special characters
+        return input
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;')
+            .trim();
     }
 
     resetContactForm() {
