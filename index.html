@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Vinny's Digital Visiting Card - Professional Contact Information">
+    <meta name="keywords" content="digital card, visiting card, contact, professional">
+    <meta name="author" content="Vinny">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
+    
+    <title>Vinny's Digital Card</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="theme-btn" aria-label="Toggle theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Profile Section -->
+        <section class="profile-section">
+            <div class="profile-image">
+                <img src="assets/profile.jpg" alt="Vinny's Profile Picture" id="profile-img">
+                <div class="profile-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            
+            <div class="profile-info">
+                <h1 id="name">Vinny</h1>
+                <h2 id="title">Digital Professional</h2>
+                <p id="bio">Passionate about technology and innovation. Creating digital solutions that make a difference.</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section">
+            <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+            
+            <div class="contact-grid">
+                <div class="contact-item" data-info="email">
+                    <i class="fas fa-envelope"></i>
+                    <div class="contact-details">
+                        <span class="contact-label">Email</span>
+                        <span class="contact-value" id="email">your.email@example.com</span>
+                    </div>
+                    <button class="copy-btn" data-copy="email" aria-label="Copy email">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="contact-item" data-info="phone">
+                    <i class="fas fa-phone"></i>
+                    <div class="contact-details">
+                        <span class="contact-label">Phone</span>
+                        <span class="contact-value" id="phone">+1 (555) 123-4567</span>
+                    </div>
+                    <button class="copy-btn" data-copy="phone" aria-label="Copy phone">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="contact-item" data-info="location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="contact-details">
+                        <span class="contact-label">Location</span>
+                        <span class="contact-value" id="location">New York, USA</span>
+                    </div>
+                    <button class="copy-btn" data-copy="location" aria-label="Copy location">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="contact-item" data-info="website">
+                    <i class="fas fa-globe"></i>
+                    <div class="contact-details">
+                        <span class="contact-label">Website</span>
+                        <a href="#" class="contact-value" id="website" target="_blank">www.yourwebsite.com</a>
+                    </div>
+                    <button class="copy-btn" data-copy="website" aria-label="Copy website">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Media Section -->
+        <section class="social-section">
+            <h3><i class="fas fa-share-alt"></i> Connect With Me</h3>
+            
+            <div class="social-links">
+                <a href="#" class="social-link" id="linkedin-link" target="_blank" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                    <span>LinkedIn</span>
+                </a>
+                
+                <a href="#" class="social-link" id="twitter-link" target="_blank" aria-label="Twitter">
+                    <i class="fab fa-twitter"></i>
+                    <span>Twitter</span>
+                </a>
+                
+                <a href="#" class="social-link" id="github-link" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                
+                <a href="#" class="social-link" id="instagram-link" target="_blank" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="skills-section">
+            <h3><i class="fas fa-code"></i> Skills & Expertise</h3>
+            
+            <div class="skills-container">
+                <div class="skill-item">
+                    <span class="skill-name">Web Development</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="90"></div>
+                    </div>
+                </div>
+                
+                <div class="skill-item">
+                    <span class="skill-name">JavaScript</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="85"></div>
+                    </div>
+                </div>
+                
+                <div class="skill-item">
+                    <span class="skill-name">Python</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="80"></div>
+                    </div>
+                </div>
+                
+                <div class="skill-item">
+                    <span class="skill-name">UI/UX Design</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="75"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="actions-section">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            
+            <div class="action-buttons">
+                <button class="action-btn primary" id="download-vcard">
+                    <i class="fas fa-download"></i>
+                    Download vCard
+                </button>
+                
+                <button class="action-btn secondary" id="share-card">
+                    <i class="fas fa-share"></i>
+                    Share Card
+                </button>
+                
+                <button class="action-btn tertiary" id="send-message">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Message
+                </button>
+            </div>
+        </section>
+
+        <!-- Contact Form -->
+        <section class="message-section" id="message-section" style="display: none;">
+            <h3><i class="fas fa-envelope-open"></i> Send Me a Message</h3>
+            
+            <form class="contact-form" id="contact-form">
+                <div class="form-group">
+                    <label for="sender-name">Your Name</label>
+                    <input type="text" id="sender-name" name="senderName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sender-email">Your Email</label>
+                    <input type="email" id="sender-email" name="senderEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="action-btn primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Message
+                    </button>
+                    
+                    <button type="button" class="action-btn secondary" id="cancel-message">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <!-- Admin Access (Hidden by default) -->
+    <div class="admin-access" id="admin-access">
+        <button class="admin-btn" id="admin-login-btn" aria-label="Admin Login">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="toast-icon"></i>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
